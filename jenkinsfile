@@ -13,5 +13,5 @@ pipeline {
           checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/amrita1337/DevOpsDemonew.git']]])
       }
     }
-  }
+ }
 
