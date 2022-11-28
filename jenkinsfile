@@ -2,6 +2,15 @@ pipeline {
   agent any
 
   stages {
+  
+    
+  stage ("Scan Code"){
+  steps{
+    withSonarQubeEnv ("sonar") {
+      sh 'mvn clean package sonar:sonar'
+    }
+  }
+  }
    
     stage('Build') {
       steps {
