@@ -1,11 +1,11 @@
 pipeline {
   agent any
 
-  stages {
   
+  stages {
    stage ("Scan Code"){
-    steps{
-      withSonarQubeEnv ("sonar") {
+  steps{
+    withSonarQubeEnv ("sonar") {
       sh 'mvn clean package sonar:sonar'
     }
   }
@@ -18,10 +18,17 @@ pipeline {
       }
 
     }
+    
+    
     stage('Deploy') {
       steps {
-          deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://172.31.8.232:8080')], contextPath: 'myapp', war: '**/*.war'
-      }
+        deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://172.31.11.230:8080')], contextPath: 'myapp', war: '**/*.war'
     }
+   }
   }
 }
+
+
+
+
+
