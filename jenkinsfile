@@ -1,15 +1,7 @@
  pipeline {
   agent any
 
-  
   stages {
-   stage ("Scan Code"){
-  steps{
-    withSonarQubeEnv ("sonar") {
-      sh 'mvn clean package sonar:sonar'
-    }
-  }
-  }
    
     stage('Build') {
       steps {
@@ -18,12 +10,10 @@
       }
 
     }
-    
-    
     stage('Deploy') {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/amrita1337/DevOpsDemonew.git']]])
+          deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://172.31.8.232:8080')], contextPath: 'myapp', war: '**/*.war'
+      }
     }
-   }
   }
 }
