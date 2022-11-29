@@ -15,6 +15,27 @@ pipeline {
     }
   }
   }
+  
+    stage ('push into Nexus') {
+      steps { 
+        nexusArtifactuploader artifacts : [
+                  [
+                    artifactId:'DevOpsDemo',
+                    classifier : '',
+                    file: 'target/DevopsDemo.war'
+                    type : 'war'
+                    ]
+        ],
+        credentialsId: 'admin/******(nexus_user)',
+        groupId: 'com.blazeclan',
+        nexusUrl: '43.205.230.120:8081/nexus',
+        nexusVersion: 'NEXUS3',
+        protocol: 'http',
+        repository: 'mavenhosted_repo',
+        version : '${BUILD_NUMBER}'
+        
+      }
+    }
     stage('Build') {
       steps {
         sh '"mvn" -Dmaven.test.failure.ignore clean install'
