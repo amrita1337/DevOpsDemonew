@@ -14,8 +14,6 @@ pipeline {
             sh 'mvn clean package sonar:sonar'
     }
   }
-  }
-  
     stage ('push into Nexus') {
       steps { 
         nexusArtifactuploader artifacts : [
