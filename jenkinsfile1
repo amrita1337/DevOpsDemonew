@@ -1,56 +1,62 @@
 pipeline {
-
-  agent { 
+  agent {
     node {
-     label 'jenkins-slave1'
+      label 'jenkins-slave1'
     }
   }
-    
   stages {
-  
-     stage ("Scan Code"){
-        steps{
-           withSonarQubeEnv ("sonar") {
-            sh 'mvn clean package sonar:sonar'
+    stage('Maven Build') {
+      steps {
+        checkout([
+		$class: 'GitSCM', 
+		branches: [[name: '*/master']], 
+		extensions: [], 
+		userRemoteConfigs: [[url: 'https://github.com/amrita1337/DevOpsDemonew.git']]
+		])
+        sh 'mvn clean package'
+      }
+    }
+    stage('Quality Check of codes with SonarQube') {
+      steps {
+      	withSonarQubeEnv('sonarqube') { 
+	  sh "mvn sonar:sonar"
+	}
+      }
+    }
+    stage('Push the Artifact into Nexus') {
+      steps {
+      	nexusArtifactUploader artifacts: [
+			[
+				artifactId: 'DevOpsDemo', 
+				classifier: '', 
+				file: 'target/DevopsDemo.war', 
+				type: 'war'
+			]
+	], 
+	credentialsId: 'admin/******(nexus_user)', 
+	groupId: 'com.blazeclan', 
+	nexusUrl: '43.205.230.120:8081/nexus', 
+	nexusVersion: 'NEXUS3', 
+	protocol: 'http', 
+	repository: 'mavenhosted_repo', 
+	version: '${BUILD_NUMBER}'
+      }
+    }
+    stage('Pull the Artifact from Nexus and Deploy on Production') {
+      agent any
+      steps {
+      	sh 'curl -X GET http://amrita:highrisk@172.31.36.26:8081/nexus/service/local/repositories/maven-central/content/com/blazeclan/DevOpsDemo/${BUILD_NUMBER}/DevOpsDemo-${BUILD_NUMBER}.war -o DevOpsDemo-${BUILD_NUMBER}.war'
+	deploy adapters: [
+		tomcat9(credentialsId: 'admintest/******(tomcate_new)', 
+		path: '', 
+		url: 'http://3.109.207.207:8080')
+	], 
+	contextPath: 'DevOpsDemo-App', 
+	war: '**/*.war'
+      }
     }
   }
-    stage ('push into Nexus') {
-      steps { 
-        nexusArtifactuploader artifacts : [
-                  [
-                    artifactId:'DevOpsDemo',
-                    classifier : '',
-                    file: 'target/DevopsDemo.war'
-                    type : 'war'
-                    ]
-        ],
-        credentialsId: 'admin/******(nexus_user)',
-        groupId: 'com.blazeclan',
-        nexusUrl: '43.205.230.120:8081/nexus',
-        nexusVersion: 'NEXUS3',
-        protocol: 'http',
-        repository: 'mavenhosted_repo',
-        version : '${BUILD_NUMBER}'
-        
-      }
-    }
-    stage('Build') {
-      steps {
-        sh '"mvn" -Dmaven.test.failure.ignore clean install'
-
-      }
-    }
-
-    stage('Deploy') {
-
-      steps {
-
-          checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/amrita1337/DevOpsDemonew.git']]])
-
-      }
-
-    }
-
-  }
-
-}
+  post {
+    always{
+      slackSend channel: '#alert', color: 'good', message: 'Build is in progress', teamDomain: 'jenkins-trainingtalk', tokenCredentialId: 'slack-notifier'
+	deleteDir()
