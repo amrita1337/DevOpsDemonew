@@ -3,10 +3,11 @@
 
   stages {
   
-      stage ("Scan Code"){
+      stage ('Scan Code'){
         steps{
           withSonarQubeEnv ("sonar") {
           sh 'mvn clean package sonar:sonar'
+    }
     }
    
     stage('Build') {
