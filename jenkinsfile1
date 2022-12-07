@@ -35,7 +35,7 @@ pipeline {
 	], 
 	credentialsId: 'admin/******(nexus_user)', 
 	groupId: 'com.blazeclan', 
-	nexusUrl: '43.205.230.120:8081/nexus', 
+	nexusUrl: '172.31.36.26:8081/nexus', 
 	nexusVersion: 'NEXUS3', 
 	protocol: 'http', 
 	repository: 'mavenhosted_repo', 
@@ -49,7 +49,7 @@ pipeline {
 	deploy adapters: [
 		tomcat9(credentialsId: 'admintest/******(tomcate_new)', 
 		path: '', 
-		url: 'http://3.109.207.207:8080')
+		url: 'http://172.31.11.230:8080')
 	], 
 	contextPath: 'DevOpsDemo-App', 
 	war: '**/*.war'
