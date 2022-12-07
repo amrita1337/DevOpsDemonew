@@ -33,12 +33,12 @@ pipeline {
 				type: 'war'
 			]
 	], 
-	credentialsId: 'admin/******(nexus_user)', 
+	credentialsId: 'admin/****** (nexus_user)', 
 	groupId: 'com.blazeclan', 
 	nexusUrl: '172.31.36.26:8081/nexus', 
 	nexusVersion: 'NEXUS3', 
 	protocol: 'http', 
-	repository: 'mavenhosted_repo', 
+	repository: 'DevOpsDemonew', 
 	version: '${BUILD_NUMBER}'
       }
     }
@@ -47,7 +47,7 @@ pipeline {
       steps {
       	sh 'curl -X GET http://amrita:highrisk@172.31.36.26:8081/nexus/service/local/repositories/maven-central/content/com/blazeclan/DevOpsDemo/${BUILD_NUMBER}/DevOpsDemo-${BUILD_NUMBER}.war -o DevOpsDemo-${BUILD_NUMBER}.war'
 	deploy adapters: [
-		tomcat9(credentialsId: 'admintest/******(tomcate_new)', 
+		tomcat9(credentialsId: 'admintest/****** (tomcat_new)', 
 		path: '', 
 		url: 'http://172.31.11.230:8080')
 	], 
