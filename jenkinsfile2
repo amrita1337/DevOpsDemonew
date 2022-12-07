@@ -1,0 +1,40 @@
+pipeline {
+  agent {
+    node {
+      label 'jenkins-slave1'
+    }
+  }
+  stages{
+	stage(" Maven Build"){
+		steps{
+			sh 'mvn clean package'
+		}
+            }
+        stage("Quality Check"){
+		steps{
+			withSonarQubeEnv('server-sonar') {
+				sh "mvn sonar:sonar"
+			}
+		}
+      }
+	stage("Upload to Nexus"){
+		  steps{
+			  nexusArtifactUploader artifacts: [
+				  [
+					  artifactId: 'DevOpsDemo', 
+					  classifier: '', 
+					  file: 'target/DevOpsDemo.war', 
+					  type: 'war'
+				  ]
+			  ],
+				  credentialsId: 'admin/****** (nexus_user)', 
+				  groupId: 'com.blazeclan', 
+				  nexusUrl: '172.31.36.26:8081', 
+				  nexusVersion: 'nexus3', 
+				  protocol: 'http', 
+				  repository: 'DevOpsDemonew', 
+				  version: '1.${BUILD_NUMBER}'
+		  }
+	  }
+  }
+}
