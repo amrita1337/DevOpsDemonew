@@ -27,13 +27,13 @@ pipeline {
 					  type: 'war'
 				  ]
 			  ],
-				  credentialsId: 'admin/****** (nexus_user)', 
+				  credentialsId: 'nexus_user', 
 				  groupId: 'com.blazeclan', 
-				  nexusUrl: '172.31.36.26:8081', 
+				  nexusUrl: '13.235.95.47:8081/', 
 				  nexusVersion: 'nexus3', 
 				  protocol: 'http', 
-				  repository: 'DevOpsDemonew', 
-				  version: '1.${BUILD_NUMBER}'
+				  repository: 'mavenhosted_repo', 
+				  version: '0.0.1-SNAPSHOT'
 		  }
 	  }
   }
