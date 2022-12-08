@@ -12,7 +12,7 @@ pipeline {
             }
         stage("Quality Check"){
 		steps{
-			withSonarQubeEnv('sonarqube-token') {
+			withSonarQubeEnv('sonarqube-8.9.10') {
 				sh "mvn sonar:sonar"
 			}
 		}
@@ -27,7 +27,7 @@ pipeline {
 					  type: 'war'
 				  ]
 			  ],
-				  credentialsId: 'admin', 
+				  credentialsId: 'nexus_user', 
 				  groupId: 'com.blazeclan', 
 				  nexusUrl: '13.235.95.47:8081', 
 				  nexusVersion: 'nexus3', 
