@@ -12,7 +12,7 @@ pipeline {
             }
         stage("Quality Check"){
 		steps{
-			withSonarQubeEnv('admin') {
+			withSonarQubeEnv('sonarqube') {
 				sh "mvn sonar:sonar"
 			}
 		}
