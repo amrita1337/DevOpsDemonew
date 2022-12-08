@@ -27,7 +27,7 @@ pipeline {
 					  type: 'war'
 				  ]
 			  ],
-				  credentialsId: 'nexus_user', 
+				  credentialsId: 'admin', 
 				  groupId: 'com.blazeclan', 
 				  nexusUrl: '13.235.95.47:8081', 
 				  nexusVersion: 'nexus3', 
