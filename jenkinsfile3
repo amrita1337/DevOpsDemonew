@@ -4,47 +4,46 @@ pipeline {
       label 'jenkins-slave1'
     }
   }
-  stages{
-	stage(" Maven Build"){
-		steps{
-			sh 'mvn clean package'
-		}
-            }
-        stage("Quality Check"){
-		steps{
-			withSonarQubeEnv('sonarqube-8.9.10') {
-				sh "mvn sonar:sonar"
-			}
-		}
+  stages {
+    stage('Maven Build') {
+      steps {
+        sh 'mvn clean package'
       }
-	stage("Upload to Nexus"){
-		  steps{
-			  nexusArtifactUploader artifacts: [
-				  [
-					  artifactId: 'DevOpsDemo', 
-					  classifier: '', 
-					  file: 'target/DevOpsDemo.war', 
-					  type: 'war'
-				  ]
-			  ],
-				  credentialsId: 'nexus_user', 
-				  groupId: 'com.blazeclan', 
-				  nexusUrl: '13.235.95.47:8081', 
-				  nexusVersion: 'nexus3', 
-				  protocol: 'http', 
-				  repository: 'mavenhosted_repo', 
-				  version: '0.0.1-SNAPSHOT'
-		  }
-	  }
-    
+    }
+    stage('Quality Check of codes with SonarQube') {
+      steps {
+      	withSonarQubeEnv('sonarqube-8.9.10') { 
+	  sh "mvn sonar:sonar"
+	}
+      }
+    }
+    stage('Push the Artifact into Nexus') {
+      steps {
+      	nexusArtifactUploader artifacts: [
+			[
+				artifactId: 'DevOpsDemo', 
+				classifier: '', 
+				file: 'target/DevOpsDemo.war', 
+				type: 'war'
+			]
+	], 
+	credentialsId: 'nexus_user', 
+	groupId: 'com.blazeclan', 
+	nexusUrl: '3.110.128.175:8081/', 
+	nexusVersion: 'nexus3', 
+	protocol: 'http', 
+	repository: 'mavenhosted_repo', 
+	version: '0.0.1-SNAPSHOT'
+      }
+    }
     stage('Pull the Artifact from Nexus and Deploy on Production') {
       agent any
       steps {
-      	sh 'curl -X http://3.110.128.175:8081/repository/mavenhosted_repo/com/blazeclan/DevOpsDemo/0.0.1-SNAPSHOT/DevOpsDemo-0.0.1-20221208.081532-2.war
+      	sh 'curl -X GET http://3.110.128.175:8081/repository/mavenhosted_repo/com/blazeclan/DevOpsDemo/0.0.1-SNAPSHOT/DevOpsDemo-0.0.1-20221208.081532-2.war
 	deploy adapters: [
 		tomcat9(credentialsId: 'tomcat_new', 
 		path: '', 
-		url: '15.206.205.69:8080/'
+		url: 'http://tomcat:8080')
 	], 
 	contextPath: 'DevOpsDemo-App', 
 	war: '**/*.war'
@@ -57,4 +56,4 @@ pipeline {
 	deleteDir()
       }
    }
-}  
+}
