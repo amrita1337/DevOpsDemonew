@@ -43,7 +43,7 @@ pipeline {
 	deploy adapters: [
 		tomcat9(credentialsId: 'tomcat_new', 
 		path: '', 
-		url: 'http://172.31.40.119:8080')
+		url: 'http://172.31.11.230:8080')
 	], 
 	contextPath: 'MyDevOpsApp', 
 	war: '**/*.war'
