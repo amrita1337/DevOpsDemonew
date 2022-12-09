@@ -1,0 +1,93 @@
+pipeline {
+  agent {
+    node {
+      label 'jenkins-slave1'
+    }
+  }
+  stages{
+	stage(" Maven Build"){
+		steps{
+			sh 'mvn clean package'
+		}
+            }
+        stage("Quality Check"){
+		steps{
+			withSonarQubeEnv('sonarqube-8.9.10') {
+				sh "mvn sonar:sonar"
+			}
+		}
+      }
+	stage("Upload to Nexus"){
+		  steps{
+			  nexusArtifactUploader artifacts: [
+				  [
+					  artifactId: 'DevOpsDemo', 
+					  classifier: '', 
+					  file: 'target/DevOpsDemo.war', 
+					  type: 'war'
+				  ]
+			  ],
+				  credentialsId: 'nexus_user', 
+				  groupId: 'com.blazeclan', 
+				  nexusUrl: '13.235.95.47:8081', 
+				  nexusVersion: 'nexus3', 
+				  protocol: 'http', 
+				  repository: 'mavenhosted_repo', 
+				  version: '0.0.1-SNAPSHOT'
+		  }
+	  }
+    
+    stage('Pull the Artifact from Nexus and Deploy on Production') {
+      agent any
+      steps {
+      	sh 'curl -X http://3.110.128.175:8081/repository/mavenhosted_repo/com/blazeclan/DevOpsDemo/0.0.1-SNAPSHOT/DevOpsDemo-0.0.1-20221208.081532-2.war
+	deploy adapters: [
+		tomcat9(credentialsId: 'tomcat_new', 
+		path: '', 
+		url: '15.206.205.69:8080/'
+	], 
+	contextPath: 'DevOpsDemo-App', 
+	war: '**/*.war'
+      }
+    }
+  }
+  post {
+    always{
+      slackSend channel: '#alert', color: 'good', message: 'Build is in progress', teamDomain: 'jenkins-trainingtalk', tokenCredentialId: 'slack-notifier'
+	deleteDir()
+      }
+   }
+}
+    
+    
+    
+  }
+}
+
+
+
+
+
+
+
+    stage('Pull the Artifact from Nexus and Deploy on Production') {
+      agent any
+      steps {
+      	sh 'curl -X GET http://amrita:highrisk@172.31.36.26:8081/nexus/service/local/repositories/maven-central/content/com/blazeclan/DevOpsDemo/${BUILD_NUMBER}/DevOpsDemo-${BUILD_NUMBER}.war -o DevOpsDemo-${BUILD_NUMBER}.war'
+	deploy adapters: [
+		tomcat9(credentialsId: 'tomcat_new', 
+		path: '', 
+		url: '172.31.11.230:8080'
+	], 
+	contextPath: 'DevOpsDemo-App', 
+	war: '**/*.war'
+      }
+    }
+  }
+  post {
+    always{
+      slackSend channel: '#alert', color: 'good', message: 'Build is in progress', teamDomain: 'jenkins-trainingtalk', tokenCredentialId: 'slack-notifier'
+	deleteDir()
+      }
+   }
+}
