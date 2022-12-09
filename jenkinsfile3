@@ -29,7 +29,7 @@ pipeline {
 	], 
 	credentialsId: 'nexus_user', 
 	groupId: 'com.blazeclan', 
-	nexusUrl: '3.110.128.175:8081', 
+	nexusUrl: '172.31.36.26:8081', 
 	nexusVersion: 'nexus3', 
 	protocol: 'http', 
 	repository: 'mavenhosted_repo', 
@@ -39,11 +39,11 @@ pipeline {
     stage('Pull the Artifact from Nexus and Deploy on Production') {
       agent any
       steps {
-      	sh 'wget --user=admin --password=nexus http://65.2.182.188:8081/repository/mavenhosted_repo/com/blazeclan/DevOpsDemo/0.0.1-SNAPSHOT/DevOpsDemo-0.0.1-20221208.081532-2.war'
+      	sh 'wget --user=admin --password=nexus http://172.31.36.26:8081/repository/mavenhosted_repo/com/blazeclan/DevOpsDemo/0.0.1-SNAPSHOT/DevOpsDemo-0.0.1-20221208.081532-2.war'
 	deploy adapters: [
 		tomcat9(credentialsId: 'tomcat_new', 
 		path: '', 
-		url: 'http://65.0.61.75:8080')
+		url: 'http://172.31.40.119:8080')
 	], 
 	contextPath: 'DevOpsDemo-App', 
 	war: '**/*.war'
