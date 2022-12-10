@@ -52,8 +52,11 @@ pipeline {
   }
     post {
     always{
-      slackSend channel: '#builds',color: 'good', message: 'Build is success', teamDomain: 'blazeclan-7ep8773', tokenCredentialId: 'rQVTJqJjUh4hklojDB8m53o2'
-	deleteDir()
+	slackSend(
+    		channel: blazeclan-7ep8773,
+    		replyBroadcast: true,
+    		message: "Build failed. Broadcast to channel for better visibility."
+)
       }
    }
 }
