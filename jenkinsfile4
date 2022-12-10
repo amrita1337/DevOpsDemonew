@@ -52,7 +52,7 @@ pipeline {
   }
     post {
     always{
-      slackSend channel: '#builds', message: 'Build is success', teamDomain: 'blazeclan-7ep8773', tokenCredentialId: 'BbJ5W1IlgyJRqSWWNSE1ClKo'
+      slackSend channel: '#builds',color: 'good', message: 'Build is success', teamDomain: 'blazeclan-7ep8773', tokenCredentialId: 'BbJ5W1IlgyJRqSWWNSE1ClKo'
 	deleteDir()
       }
    }
